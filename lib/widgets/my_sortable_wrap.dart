@@ -78,7 +78,6 @@ class SortableWrapState extends ConsumerState<SortableWrap> {
   }
 
   void initCachedWithChildren() {
-    print('initCachedWithChildren');
     preservedElements.clear();
     for (int i = 0; i < widget.children.length; i++) {
       SortableElement e = SortableElement();
@@ -269,7 +268,10 @@ class SortableWrapState extends ConsumerState<SortableWrap> {
             onDraggableCanceled: onDraggableCanceled,
             child: childBuilder,
           )
-        : AnimatedScale(
+        :
+
+        /// mouseover animation: the center element and neighboring elements are scaled
+        AnimatedScale(
             alignment: Alignment.bottomCenter,
             scale: scaleValue(hoveredIndex, element.visibleIndex),
             duration: const Duration(milliseconds: 100),
