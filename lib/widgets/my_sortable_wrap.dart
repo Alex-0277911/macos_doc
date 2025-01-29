@@ -78,6 +78,7 @@ class SortableWrapState extends ConsumerState<SortableWrap> {
   }
 
   void initCachedWithChildren() {
+    print('initCachedWithChildren');
     preservedElements.clear();
     for (int i = 0; i < widget.children.length; i++) {
       SortableElement e = SortableElement();
@@ -108,11 +109,22 @@ class SortableWrapState extends ConsumerState<SortableWrap> {
     animationElements.clear();
   }
 
+  double scaleValue(int? hoveredIndex, int index) {
+    double scale = 1.0;
+    if (hoveredIndex != null) {
+      if (index == hoveredIndex) {
+        scale = 1.15;
+      } else if ((index - hoveredIndex).abs() == 1) {
+        scale = 1.08;
+      }
+    }
+    return scale;
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isOutside = ref.watch(isOutsideProvider);
     final int? hoveredIndex = ref.watch(hoveredIndexProvider);
-    print('hoveredIndex => $hoveredIndex');
     Widget builder = Builder(
       builder: (context) {
         wrapperContext = context;
@@ -121,7 +133,7 @@ class SortableWrapState extends ConsumerState<SortableWrap> {
           runSpacing: widget.runSpacing,
           children: animationElements
               .map(
-                (e) => enclosedWithDraggable(e, isOutside),
+                (e) => enclosedWithDraggable(e, isOutside, hoveredIndex),
               )
               .toList(),
         );
@@ -133,7 +145,7 @@ class SortableWrapState extends ConsumerState<SortableWrap> {
   }
 
   /// Wrapped with draggable widget
-  Widget enclosedWithDraggable(SortableElement element, bool isOutside) {
+  Widget enclosedWithDraggable(SortableElement element, bool isOutside, int? hoveredIndex) {
     int index = preservedElements.indexOf(element);
 
     /// A. Return the widget in dragging mode
@@ -257,16 +269,21 @@ class SortableWrapState extends ConsumerState<SortableWrap> {
             onDraggableCanceled: onDraggableCanceled,
             child: childBuilder,
           )
-        : Draggable<SortableElement>(
-            /// the data passing to DragTarget and its callbacks
-            data: element,
-            key: valueKey,
-            feedback: options.draggableFeedbackBuilder(element.view),
-            onDragEnd: onDragEnd,
-            onDragStarted: onDragStarted,
-            onDragCompleted: onDragCompleted,
-            onDraggableCanceled: onDraggableCanceled,
-            child: childBuilder,
+        : AnimatedScale(
+            alignment: Alignment.bottomCenter,
+            scale: scaleValue(hoveredIndex, element.visibleIndex),
+            duration: const Duration(milliseconds: 100),
+            child: Draggable<SortableElement>(
+              /// the data passing to DragTarget and its callbacks
+              data: element,
+              key: valueKey,
+              feedback: options.draggableFeedbackBuilder(element.view),
+              onDragEnd: onDragEnd,
+              onDragStarted: onDragStarted,
+              onDragCompleted: onDragCompleted,
+              onDraggableCanceled: onDraggableCanceled,
+              child: childBuilder,
+            ),
           );
   }
 

@@ -25,7 +25,6 @@ class HoveredIndex extends _$HoveredIndex {
     if (state == hoveredIndex) {
       return;
     }
-    print('SET hoveredIndex => $hoveredIndex');
     state = hoveredIndex;
   }
 }

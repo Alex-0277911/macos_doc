@@ -89,22 +89,17 @@ class _DockState<T> extends ConsumerState<Dock<T>> {
   /// my data array
   List<int> dataArray = [];
 
-  // double scale = 1.0;
-  //
-  // double scaleValue(int? hoveredIndex, int index) {
-  //   double scale = 1.0;
-  //   if (hoveredIndex != null) {
-  //     if (index == hoveredIndex) {
-  //       scale = 1.4;
-  //     } else if ((index - hoveredIndex).abs() == 1) {
-  //       scale = 1.2;
-  //     }
-  //   }
-  //   print('hoveredIndex => $hoveredIndex');
-  //   print('index => $index');
-  //   print('scale => $scale');
-  //   return scale;
-  // }
+  double scaleValue(int? hoveredIndex, int index) {
+    double scale = 1.0;
+    if (hoveredIndex != null) {
+      if (index == hoveredIndex) {
+        scale = 1.14;
+      } else if ((index - hoveredIndex).abs() == 1) {
+        scale = 1.08;
+      }
+    }
+    return scale;
+  }
 
   @override
   void initState() {
@@ -120,33 +115,26 @@ class _DockState<T> extends ConsumerState<Dock<T>> {
   @override
   Widget build(BuildContext context) {
     final int? hoveredIndex = ref.watch(hoveredIndexProvider);
-    List<Widget> children = _items.map(widget.builder).toList();
-    // List<Widget> children = [
-    //   for (int i = 0; i < _items.length; i++) //widget.builder(_items[i])
-    //     GestureDetector(
-    //       onTap: () {
-    //         print('SET SCALE => 1.4');
-    //         setState(() {
-    //           scale = 1.4;
-    //         });
-    //       },
-    //       child: AnimatedContainer(
-    //         key: ValueKey(i),
-    //         duration: const Duration(milliseconds: 500),
-    //         // constraints: const BoxConstraints(minWidth: 48),
-    //         height: 48.0 * scale,
-    //         // height: 48.0 * scaleValue(hoveredIndex, i),
-    //         width: 48.0 * scale,
-    //         // width: 48.0 * scaleValue(hoveredIndex, i),
-    //         margin: const EdgeInsets.all(8.0),
-    //         decoration: BoxDecoration(
-    //           borderRadius: BorderRadius.circular(8.0),
-    //           color: Colors.primaries[_items[i].hashCode % Colors.primaries.length],
-    //         ),
-    //         child: Center(child: Icon(_items[i] as IconData, color: Colors.white)),
-    //       ),
-    //     )
-    // ];
+    // List<Widget> children = _items.map(widget.builder).toList();
+    List<Widget> children = [
+      for (int i = 0; i < _items.length; i++) //widget.builder(_items[i])
+        AnimatedScale(
+          alignment: Alignment.bottomCenter,
+          duration: const Duration(milliseconds: 100),
+          scale: scaleValue(hoveredIndex, i),
+          child: Container(
+            constraints: const BoxConstraints(minWidth: 48),
+            height: 48.0,
+            width: 48.0,
+            margin: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.0),
+              color: Colors.primaries[_items[i].hashCode % Colors.primaries.length],
+            ),
+            child: Center(child: Icon(_items[i] as IconData, color: Colors.white)),
+          ),
+        )
+    ];
 
     ///
     SortableWrapOptions options = SortableWrapOptions();

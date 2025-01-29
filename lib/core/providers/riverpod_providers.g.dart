@@ -20,7 +20,7 @@ final isOutsideProvider = AutoDisposeNotifierProvider<IsOutside, bool>.internal(
 );
 
 typedef _$IsOutside = AutoDisposeNotifier<bool>;
-String _$hoveredIndexHash() => r'4c74b1a36d3d574d99fc24d6ebdf94722c22c574';
+String _$hoveredIndexHash() => r'e87fabdc517c96a18f2be6893ee617b1c2a6b440';
 
 /// See also [HoveredIndex].
 @ProviderFor(HoveredIndex)
