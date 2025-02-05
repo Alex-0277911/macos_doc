@@ -177,7 +177,7 @@ class SortableWrapState extends ConsumerState<SortableWrap> {
     }
 
     /// Drag finish (end/complete/canceled) callback
-    void onDragFinished() {
+    void onDragFinished() async {
       int newIndex = element.visibleIndex;
       int oldIndex = element.preservedIndex;
       setState(() {
@@ -230,6 +230,9 @@ class SortableWrapState extends ConsumerState<SortableWrap> {
         draggingElement = element;
       });
 
+      ///
+      ref.read(draggingElementProvider.notifier).update(element);
+
       /// invoke caller's callback
       safeInvoke(() => widget.onSortStart?.call(element.preservedIndex));
     }
@@ -245,7 +248,15 @@ class SortableWrapState extends ConsumerState<SortableWrap> {
     }
 
     /// Drag canceled callback
-    void onDraggableCanceled(Velocity velocity, Offset offset) {
+    void onDraggableCanceled(Velocity velocity, Offset offset) async {
+      final bool isOutside = ref.watch(isOutsideProvider);
+      if (isOutside) {
+        ref.read(endDragPositionProvider.notifier).update(offset);
+        ref.read(animationDragWidgetProvider.notifier).update(true);
+        await Future.delayed(const Duration(milliseconds: 300));
+        ref.read(animationDragWidgetProvider.notifier).update(false);
+      }
+
       onDragFinished();
     }
 
