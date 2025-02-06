@@ -155,10 +155,15 @@ class _DockState<T> extends ConsumerState<Dock<T>> with TickerProviderStateMixin
     final int? hoveredIndex = ref.watch(hoveredIndexProvider);
     final SortableElement? sortableElement = ref.watch(draggingElementProvider);
     final bool animationWidget = ref.watch(animationDragWidgetProvider);
+    final Offset beginOffset = ref.watch(endDragPositionProvider);
+    final Offset endOffset = ref.watch(startDragPositionProvider);
 
     /// animation draggable widget to cancel dragging
     if (animationWidget) {
-      _animatePositionDragged(ref.watch(endDragPositionProvider), ref.watch(startDragPositionProvider));
+      _animatePositionDragged(
+        beginOffset,
+        endOffset,
+      );
     }
     List<Widget> children = _items.map(widget.builder).toList();
 
@@ -225,17 +230,11 @@ class _DockState<T> extends ConsumerState<Dock<T>> with TickerProviderStateMixin
               ),
               padding: const EdgeInsets.all(4.0),
               child: SortableWrap(
-                // onSortStart: (int index) {
-                //   ref.read(sortStartedProvider.notifier).update(true);
-                // },
                 onSortCancel: (int index) async {
                   await Future.delayed(const Duration(milliseconds: 200));
                   ref.read(draggingElementProvider.notifier).update(null);
                 },
-                onSorted: (int oldIndex, int newIndex) {
-                  // ref.read(draggingElementProvider.notifier).update(null);
-                  // ref.read(sortStartedProvider.notifier).update(false);
-                },
+                onSorted: (int oldIndex, int newIndex) {},
                 options: options,
                 children: children,
               ),
